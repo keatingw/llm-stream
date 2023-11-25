@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "llm-stream"
+version = "0.1.0"
+description = ""
+authors = ["William Keating <54231777+keatingw@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+transformers = "^4.35.2"
+accelerate = "^0.24.1"
+torch = "^2.1.1"
+fastapi = "^0.104.1"
+websockets = "^12.0"
+uvicorn = "^0.24.0.post1"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.18.0"
+ipykernel = "^6.26.0"
+types-all = "^1.0.0"
+mypy = "^1.7.1"
+ruff = "^0.1.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+select = ["ALL"]
+ignore = ["COM812", "ISC001"]
+fixable = ["I"]
+
+[tool.ruff.lint]
+pydocstyle.convention = "google"
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["transformers.*"]
+ignore_missing_imports = true
