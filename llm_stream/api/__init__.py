@@ -28,7 +28,7 @@ async def llm_websocket(
     await websocket.accept()
     while True:
         msg = await websocket.receive_text()
-        for token in stream_llm(
+        async for token in stream_llm(
             msg, websocket.app.state.model, websocket.app.state.tokenizer
         ):
             await websocket.send_text(token)
