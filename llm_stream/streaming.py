@@ -13,26 +13,6 @@ from transformers import (
 )
 
 
-async def stream_llm(
-    llm_input: str,
-    model: PreTrainedModel,
-    tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
-) -> AsyncGenerator[str, None]:
-    """Streams response from LLM."""
-    stream = AsyncTextIteratorStreamer(tokenizer=tokenizer)
-    pipe = pipeline(
-        "text-generation",
-        model=model,
-        tokenizer=tokenizer,
-        streamer=stream,
-        device_map="auto",
-    )
-    with ThreadPoolExecutor() as executor:
-        executor.submit(pipe, llm_input, max_new_tokens=100)
-        async for output in stream:
-            yield output
-
-
 class AsyncTextIteratorStreamer(TextStreamer):  # type: ignore[misc]
     """Test implementation of an asyncio-friendly verion of TextIteratorStreamer."""
 
@@ -68,3 +48,25 @@ class AsyncTextIteratorStreamer(TextStreamer):  # type: ignore[misc]
         if value is self.stop_signal:
             raise StopAsyncIteration
         return value
+
+
+async def stream_llm(
+    llm_input: str,
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
+    *,
+    skip_prompt: bool = True,
+) -> AsyncGenerator[str, None]:
+    """Streams response from LLM."""
+    stream = AsyncTextIteratorStreamer(tokenizer=tokenizer, skip_prompt=skip_prompt)
+    pipe = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        streamer=stream,
+        device_map="auto",
+    )
+    with ThreadPoolExecutor() as executor:
+        executor.submit(pipe, llm_input, max_new_tokens=100)
+        async for output in stream:
+            yield output

@@ -26,8 +26,7 @@ async def llm_websocket(
 ) -> None:
     """LLM websocket handler."""
     await websocket.accept()
-    while True:
-        msg = await websocket.receive_text()
+    async for msg in websocket.iter_text():
         async for token in stream_llm(
             msg, websocket.app.state.model, websocket.app.state.tokenizer
         ):
